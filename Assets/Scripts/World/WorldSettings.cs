@@ -12,7 +12,7 @@ public static class WorldSettings
 
 
 
-    public static Vector3Int WorldToChunkCoord(Vector3Int worldPos)
+    public static Vector3Int WorldToChunkCoord(Vector3 worldPos)
     {
         int chunkX = Mathf.FloorToInt(worldPos.x / ChunkWidth);
         int chunkY = Mathf.FloorToInt(worldPos.y / ChunkHeight);

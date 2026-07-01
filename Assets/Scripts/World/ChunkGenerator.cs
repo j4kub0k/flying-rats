@@ -10,6 +10,7 @@ public class ChunkGenerator : MonoBehaviour
     List<int> triangles = new List<int>();
     List<Color> colors = new List<Color>();
     List<Vector2> uv = new List<Vector2>();
+    public Chunk chunkData;
 
 
 
@@ -100,6 +101,8 @@ public class ChunkGenerator : MonoBehaviour
         triangles.Clear();
         colors.Clear();
         uv.Clear();
+
+        chunkData = chunk;
 
         GetComponent<MeshRenderer>().material = material;
         for (int x = 0; x < WorldSettings.ChunkWidth; x++)

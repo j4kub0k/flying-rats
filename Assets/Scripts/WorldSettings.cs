@@ -5,7 +5,9 @@ public static class WorldSettings
     public const int ChunkWidth = 16;
     public const int ChunkHeight = 64;
     public const int GrayMaxHeight = 20;
-    public const int GreenMaxHeight = 40;
+    public const int GreenMaxHeight = 32;
+    public const int MaxTerrainHeight = 40;
+    public const int MinMineableHeight = 1;
 
 
 

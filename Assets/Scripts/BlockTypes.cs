@@ -8,7 +8,7 @@ public enum BlockType
     Air,
     Gray,
     Green,
-    White
+    White,
 }
 
 public static class BlockTypeHelper
@@ -36,5 +36,30 @@ public static class BlockTypeHelper
             return BlockType.White; // Snow
     }
 
+
+    public static float TimeToDestroy(BlockType blockType)
+    {
+        return blockType switch
+        {
+            BlockType.Air => 0f,
+            BlockType.Gray => 1.5f,
+            BlockType.Green => 1f,
+            BlockType.White => 2f,
+            _ => 1f, // Default time for unknown block types
+        };
+    }
+
+
+    public static bool Unbreakable(BlockType blockType)
+    {
+        return blockType switch
+        {
+            BlockType.Air => true,
+            BlockType.Gray => false,
+            BlockType.Green => false,
+            BlockType.White => false,
+            _ => false, // Default for unknown block types
+        };
+    }
 
 }

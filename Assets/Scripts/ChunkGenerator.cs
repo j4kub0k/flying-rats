@@ -1,0 +1,137 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
+public class ChunkGenerator : MonoBehaviour
+{
+
+    List<Vector3> vertices = new List<Vector3>();
+    List<int> triangles = new List<int>();
+    List<Color> colors = new List<Color>();
+    List<Vector2> uv = new List<Vector2>();
+
+
+
+
+
+    void AddFace(Vector3 dir, Vector3Int localPos, Color color) { 
+    
+        int startIndex = vertices.Count;
+
+        if (dir == Vector3.up)
+        {
+            vertices.Add(localPos + new Vector3(0, 1, 0));
+            vertices.Add(localPos + new Vector3(0, 1, 1));
+            vertices.Add(localPos + new Vector3(1, 1, 1));
+            vertices.Add(localPos + new Vector3(1, 1, 0));
+        }
+        else if (dir == Vector3.down)
+        {
+            vertices.Add(localPos + new Vector3(0, 0, 0));
+            vertices.Add(localPos + new Vector3(1, 0, 0));
+            vertices.Add(localPos + new Vector3(1, 0, 1));
+            vertices.Add(localPos + new Vector3(0, 0, 1));
+        }
+        else if (dir == Vector3.left)
+        {
+            vertices.Add(localPos + new Vector3(0, 0, 0));
+            vertices.Add(localPos + new Vector3(0, 0, 1));
+            vertices.Add(localPos + new Vector3(0, 1, 1));
+            vertices.Add(localPos + new Vector3(0, 1, 0));
+        }
+        else if (dir == Vector3.right)
+        {
+            vertices.Add(localPos + new Vector3(1, 0, 0));
+            vertices.Add(localPos + new Vector3(1, 1, 0));
+            vertices.Add(localPos + new Vector3(1, 1, 1));
+            vertices.Add(localPos + new Vector3(1, 0, 1));
+        }
+        else if (dir == Vector3.forward)
+        {
+            vertices.Add(localPos + new Vector3(0, 0, 1));
+            vertices.Add(localPos + new Vector3(1, 0, 1));
+            vertices.Add(localPos + new Vector3(1, 1, 1));
+            vertices.Add(localPos + new Vector3(0, 1, 1));
+        }
+        else if (dir == Vector3.back)
+        {
+            vertices.Add(localPos + new Vector3(0, 0, 0));
+            vertices.Add(localPos + new Vector3(0, 1, 0));
+            vertices.Add(localPos + new Vector3(1, 1, 0));
+            vertices.Add(localPos + new Vector3(1, 0, 0));
+        }
+
+        for(int i = 0; i < 4; i++)
+        {
+            colors.Add(color);
+        }
+
+        uv.Add(new Vector2(0, 0));
+        uv.Add(new Vector2(0, 1));
+        uv.Add(new Vector2(1, 1));
+        uv.Add(new Vector2(1, 0));
+
+        triangles.Add(startIndex + 0);
+        triangles.Add(startIndex + 1);
+        triangles.Add(startIndex + 2);
+
+        triangles.Add(startIndex + 0);
+        triangles.Add(startIndex + 2);
+        triangles.Add(startIndex + 3);
+    }
+    void BuildMesh() {
+            Mesh mesh = new Mesh();
+            mesh.vertices = vertices.ToArray();
+            mesh.triangles = triangles.ToArray();
+            mesh.colors = colors.ToArray();
+            mesh.uv = uv.ToArray();
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+            GetComponent<MeshFilter>().mesh = mesh;
+            GetComponent<MeshCollider>().sharedMesh = mesh; 
+
+    }
+
+
+     public void GenerateMesh(Chunk chunk, Material material)
+    {
+        vertices.Clear();
+        triangles.Clear();
+        colors.Clear();
+        uv.Clear();
+
+        GetComponent<MeshRenderer>().material = material;
+        for (int x = 0; x < WorldSettings.ChunkWidth; x++)
+            for (int y = 0; y < WorldSettings.ChunkHeight; y++)
+                for (int z = 0; z < WorldSettings.ChunkWidth; z++)
+                {
+                    Vector3Int localPos = new Vector3Int(x, y, z);
+                    BlockType type = chunk.GetBlock(localPos);
+
+                    if (type == BlockType.Air) continue; // vzduch nemá mesh
+
+                    CheckAndAddFace(chunk, localPos, Vector3Int.up);
+                    CheckAndAddFace(chunk, localPos, Vector3Int.down);
+                    CheckAndAddFace(chunk, localPos, Vector3Int.left);
+                    CheckAndAddFace(chunk, localPos, Vector3Int.right);
+                    CheckAndAddFace(chunk, localPos, new Vector3Int(0, 0, 1));  // forward
+                    CheckAndAddFace(chunk, localPos, new Vector3Int(0, 0, -1)); // back
+                }
+
+        BuildMesh();
+    }
+
+    void CheckAndAddFace(Chunk chunk, Vector3Int localPos, Vector3Int direction)
+    {
+        Vector3Int neighborPos = localPos + direction;
+        BlockType neighborType = chunk.GetBlock(neighborPos);
+
+        if (neighborType == BlockType.Air)
+        {
+            BlockType currentType = chunk.GetBlock(localPos);
+            Color color = BlockTypeHelper.GetColor(currentType);
+            AddFace(direction, localPos, color);
+        }
+    }
+}

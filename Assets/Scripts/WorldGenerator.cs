@@ -14,13 +14,35 @@ public static class WorldGenerator
     }
 
 
-    public static float GetHeight(int x, int z)
+   public static float GetHeight(int x, int z)
+{
+    int octaves = 4;
+    float persistence = 0.5f;
+    float lacunarity = 2f;
+    float baseScale = 0.02f;
+
+    float amplitude = 1f;
+    float frequency = 1f;
+    float noiseHeight = 0f;
+    float amplitudeSum = 0f; // na normalizáciu vısledku spä do 0..1
+
+    for (int i = 0; i < octaves; i++)
     {
-        float scale = 0.1f; // Adjust the scale for more or less variation
-        float height = Mathf.PerlinNoise((x + seedOffsetX) * scale, (z + seedOffsetZ) * scale);
-        return height * WorldSettings.ChunkHeight; // Scale to chunk height
+        float sampleX = (x + seedOffsetX) * baseScale * frequency;
+        float sampleZ = (z + seedOffsetZ) * baseScale * frequency;
+
+        float noiseValue = Mathf.PerlinNoise(sampleX, sampleZ);
+        noiseHeight += noiseValue * amplitude;
+
+        amplitudeSum += amplitude;
+        amplitude *= persistence;
+        frequency *= lacunarity;
     }
 
+    noiseHeight /= amplitudeSum; // normalizuj spä na 0..1
+
+    return noiseHeight * WorldSettings.MaxTerrainHeight;
+}
 
     public static void GenerateChunk(Chunk chunk)
     {

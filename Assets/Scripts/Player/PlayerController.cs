@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.LightTransport;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -16,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public BlockType selectedBlockType = BlockType.Green;
     CharacterController controller;
     Camera playerCamera;
+    public World world;
 
 
 
@@ -160,7 +160,29 @@ public class PlayerController : MonoBehaviour
 
     void Build()
     {
-      
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        if (!Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        {
+            return;
+        }
 
+        Vector3 targetPos = hit.point + hit.normal * 0.5f;
+        Vector3Int blockPos = Vector3Int.FloorToInt(targetPos);
+
+        if (blockPos.y >= WorldSettings.MaxBuildHeight)
+        {
+            return;
+        }
+
+        Vector3Int chunkCoord = WorldSettings.WorldToChunkCoord(blockPos);
+        Vector3Int localPos = WorldSettings.WorldToLocalCoord(blockPos);
+
+        Chunk chunk = world.GetChunk(chunkCoord);
+        if (chunk == null) return; // mimo vygenerovaneho sveta
+
+        if (chunk.GetBlock(localPos) != BlockType.Air) return; // bunka uz obsadena
+
+        chunk.SetBlock(localPos, selectedBlockType);
+        world.RebuildChunk(chunkCoord);
     }
 }

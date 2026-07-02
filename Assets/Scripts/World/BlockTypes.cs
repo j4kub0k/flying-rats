@@ -37,16 +37,17 @@ public static class BlockTypeHelper
     }
 
 
-    public static float TimeToDestroy(BlockType blockType)
+   public static float TimeToDestroy(BlockType blockType)
     {
         return blockType switch
         {
             BlockType.Air => 0f,
-            BlockType.Gray => 1.5f,
-            BlockType.Green => 1f,
-            BlockType.White => 2f,
+            BlockType.Gray => 2f,    // rock - longest to mine
+            BlockType.Green => 1f,   // grass - normal
+            BlockType.White => 0.5f, // snow - fastest
             _ => 1f, // Default time for unknown block types
         };
+ 
     }
 
 

@@ -153,6 +153,9 @@ MonoBehaviour:
   jumpHeight: 2
   gravity: -25
   mouseSensitivity: 2
+  reachDistance: 5
+  selectedBlockType: 2
+  world: {fileID: 2002633799}
 --- !u!143 &16578346
 CharacterController:
   m_ObjectHideFlags: 0

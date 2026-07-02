@@ -8,6 +8,8 @@ public static class WorldSettings
     public const int GreenMaxHeight = 32;
     public const int MaxTerrainHeight = 40;
     public const int MinMineableHeight = 1;
+    public const int MaxBuildHeight = 64;
+    public const int MinTerrainHeight = 8; 
 
 
 

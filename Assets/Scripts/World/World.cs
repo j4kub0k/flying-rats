@@ -5,10 +5,11 @@ public class World : MonoBehaviour
 {
 
     Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
+    Dictionary<Vector3Int, ChunkGenerator> chunkRenderers = new Dictionary<Vector3Int, ChunkGenerator>();
 
-    public int WorldSizeInChunks = 10; // Size of the world in chunks
+    public int WorldSizeInChunks = 10; 
 
-    public Material Material; // Material for the chunks
+    public Material Material; 
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -39,7 +40,6 @@ public class World : MonoBehaviour
         WorldGenerator.GenerateChunk(chunk);
         chunks[chunkCoord] = chunk;
 
-        // Vytvor GameObject na vykreslenie tohto chunku
         GameObject chunkObject = new GameObject($"Chunk {chunkCoord.x},{chunkCoord.z}");
         chunkObject.transform.parent = this.transform;
         chunkObject.transform.position = new Vector3(
@@ -48,6 +48,25 @@ public class World : MonoBehaviour
             chunkCoord.z * WorldSettings.ChunkWidth
         );
         ChunkGenerator renderer = chunkObject.AddComponent<ChunkGenerator>();
-        renderer.GenerateMesh(chunk, Material); // alebo ako sa tvoja metóda volá
+        renderer.GenerateMesh(chunk, Material);
+        chunkRenderers[chunkCoord] = renderer;
+    }
+
+    public Chunk GetChunk(Vector3Int chunkCoord)
+    {
+        if (chunks.TryGetValue(chunkCoord, out Chunk chunk))
+        {
+            return chunk;
+        }
+        return null;
+    }
+
+    public void RebuildChunk(Vector3Int chunkCoord)
+    {
+        if (chunks.TryGetValue(chunkCoord, out Chunk chunk) &&
+            chunkRenderers.TryGetValue(chunkCoord, out ChunkGenerator renderer))
+        {
+            renderer.GenerateMesh(chunk, Material);
+        }
     }
 }

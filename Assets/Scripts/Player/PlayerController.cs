@@ -12,8 +12,8 @@ public class PlayerController : MonoBehaviour
     float timeToMine = 0.0f;
     bool hasTargetBlock = false;
     Vector3Int currentMineTarget;
-    public BlockType selectedBlockType = BlockType.Green;
     CharacterController controller;
+    public Inventory inventory;
     Camera playerCamera;
     public World world;
 
@@ -46,7 +46,13 @@ public class PlayerController : MonoBehaviour
         controls.Player.Mine.performed += ctx => destroyIsHeld = true;
         controls.Player.Mine.canceled += ctx => destroyIsHeld = false;
 
-        controls.Player.Build.performed += ctx => Build();
+        controls.Player.Build.performed += ctx => inventory.GetSelectedItem()?.Use();
+        controls.Player.SelectItem.performed += ctx => inventory.SelectSlot((int)ctx.ReadValue<float>() - 1);
+        controls.Player.ScrollItem.performed += ctx =>
+        {
+            float v = ctx.ReadValue<float>();
+            if (v != 0) inventory.Scroll(v > 0 ? 1 : -1);
+        };
 
 
     }
@@ -58,6 +64,7 @@ public class PlayerController : MonoBehaviour
     {
         playerCamera = Camera.main;
         Cursor.lockState = CursorLockMode.Locked;
+        inventory = GetComponent<Inventory>();
     }
     // Update is called once per frame
     void Update()
@@ -66,6 +73,7 @@ public class PlayerController : MonoBehaviour
         Look();
         Mine();
     }
+
 
     void Movement() { 
     
@@ -155,15 +163,17 @@ public class PlayerController : MonoBehaviour
             chunkGenerator.GenerateMesh(chunk, chunkGenerator.GetComponent<MeshRenderer>().sharedMaterial);
             timeToMine = 0.0f;
             hasTargetBlock = false;
+            BlockItem blockItem = new BlockItem(this, blockType);
+            blockItem.AddToInventory();
         }
     }
 
-    void Build()
+    public bool Build(BlockType selectedBlockType)
     {
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         if (!Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
-            return;
+            return false;
         }
 
         Vector3 targetPos = hit.point + hit.normal * 0.5f;
@@ -171,18 +181,19 @@ public class PlayerController : MonoBehaviour
 
         if (blockPos.y >= WorldSettings.MaxBuildHeight)
         {
-            return;
+            return false;
         }
 
         Vector3Int chunkCoord = WorldSettings.WorldToChunkCoord(blockPos);
         Vector3Int localPos = WorldSettings.WorldToLocalCoord(blockPos);
 
         Chunk chunk = world.GetChunk(chunkCoord);
-        if (chunk == null) return; // mimo vygenerovaneho sveta
+        if (chunk == null) return false;
 
-        if (chunk.GetBlock(localPos) != BlockType.Air) return; // bunka uz obsadena
+        if (chunk.GetBlock(localPos) != BlockType.Air) return false; // bunka uz obsadena
 
         chunk.SetBlock(localPos, selectedBlockType);
         world.RebuildChunk(chunkCoord);
+        return true;
     }
 }

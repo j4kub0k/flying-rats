@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -24,7 +25,11 @@ public class PlayerController : MonoBehaviour
     Vector2 lookInput;
     bool jumpPressed;
     bool destroyIsHeld;
-    
+
+    GameObject buildPreview;
+    public Material wireframeMaterial;   
+
+
 
 
     float verticalVelocity;
@@ -65,6 +70,7 @@ public class PlayerController : MonoBehaviour
         playerCamera = Camera.main;
         Cursor.lockState = CursorLockMode.Locked;
         inventory = GetComponent<Inventory>();
+        CreateBuildPreview();
     }
     // Update is called once per frame
     void Update()
@@ -72,6 +78,7 @@ public class PlayerController : MonoBehaviour
         Movement();
         Look();
         Mine();
+        UpdateBuildPreview();
     }
 
 
@@ -170,30 +177,116 @@ public class PlayerController : MonoBehaviour
 
     public bool Build(BlockType selectedBlockType)
     {
+        if (!TryGetBuildTarget(out BuildTarget target))
+            return false;
+
+        target.chunk.SetBlock(target.localPos, selectedBlockType);
+        world.RebuildChunk(target.chunkCoord);
+        return true;
+    }
+
+    struct BuildTarget
+    {
+        public Vector3Int blockPos;
+        public Vector3Int chunkCoord;
+        public Vector3Int localPos;
+        public Chunk chunk;
+    }
+
+    bool TryGetBuildTarget(out BuildTarget target)
+    {
+        target = default;
+
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        if (!Physics.Raycast(ray, out RaycastHit hit, reachDistance))
-        {
-            return false;
-        }
+        if (!Physics.Raycast(ray, out RaycastHit hit, reachDistance)) return false;
 
-        Vector3 targetPos = hit.point + hit.normal * 0.5f;
-        Vector3Int blockPos = Vector3Int.FloorToInt(targetPos);
-
-        if (blockPos.y >= WorldSettings.MaxBuildHeight)
-        {
-            return false;
-        }
+        Vector3Int blockPos = Vector3Int.FloorToInt(hit.point + hit.normal * 0.5f);
+        if (blockPos.y >= WorldSettings.MaxBuildHeight) return false;
 
         Vector3Int chunkCoord = WorldSettings.WorldToChunkCoord(blockPos);
-        Vector3Int localPos = WorldSettings.WorldToLocalCoord(blockPos);
-
         Chunk chunk = world.GetChunk(chunkCoord);
         if (chunk == null) return false;
 
-        if (chunk.GetBlock(localPos) != BlockType.Air) return false; // bunka uz obsadena
+        Vector3Int localPos = WorldSettings.WorldToLocalCoord(blockPos);
+        if (chunk.GetBlock(localPos) != BlockType.Air) return false;
 
-        chunk.SetBlock(localPos, selectedBlockType);
-        world.RebuildChunk(chunkCoord);
+        Bounds blockBounds = new Bounds((Vector3)blockPos + Vector3.one * 0.5f, Vector3.one);
+        if (blockBounds.Intersects(controller.bounds)) return false;
+
+        target = new BuildTarget { blockPos = blockPos, chunkCoord = chunkCoord, localPos = localPos, chunk = chunk };
         return true;
+    }
+
+
+    Mesh BuildWireframeCubeMesh()
+    {
+        Vector3[] baseVerts = {
+        new Vector3(0,0,0), new Vector3(1,0,0), new Vector3(1,0,1), new Vector3(0,0,1),
+        new Vector3(0,1,0), new Vector3(1,1,0), new Vector3(1,1,1), new Vector3(0,1,1),
+    };
+        int[] baseEdges = {
+        0,1, 1,2, 2,3, 3,0,
+        4,5, 5,6, 6,7, 7,4,
+        0,4, 1,5, 2,6, 3,7,
+    };
+
+        float d = 0.005f;
+        Vector3[] offsets = {
+        Vector3.zero,
+        new Vector3(d, d, d),
+        new Vector3(-d, -d, -d),
+    };
+
+        List<Vector3> verts = new List<Vector3>();
+        List<int> indices = new List<int>();
+
+        foreach (Vector3 off in offsets)
+        {
+            int start = verts.Count;
+            foreach (Vector3 v in baseVerts) verts.Add(v + off);
+            foreach (int i in baseEdges) indices.Add(start + i);
+        }
+
+        Mesh mesh = new Mesh();
+        mesh.SetVertices(verts);
+        mesh.SetIndices(indices.ToArray(), MeshTopology.Lines, 0);
+        return mesh;
+    }
+
+
+    void CreateBuildPreview()
+    {
+        buildPreview = new GameObject("BuildPreview");
+        buildPreview.AddComponent<MeshFilter>().mesh = BuildWireframeCubeMesh();
+
+        buildPreview.AddComponent<MeshRenderer>().material = wireframeMaterial;
+
+
+        buildPreview.SetActive(false);
+    }
+
+    void UpdateBuildPreview()
+    {
+
+        if(destroyIsHeld) 
+        {
+            buildPreview.SetActive(false);
+            return;
+        }
+
+        if(inventory.GetSelectedItem() is  not BlockItem)
+        {
+            buildPreview.SetActive(false);
+            return;
+        }
+        if (TryGetBuildTarget(out BuildTarget target))
+        {
+            buildPreview.transform.position = target.blockPos;
+            buildPreview.SetActive(true);
+        }
+        else
+        {
+            buildPreview.SetActive(false);
+        }
     }
 }

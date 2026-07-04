@@ -216,6 +216,7 @@ MonoBehaviour:
   reachDistance: 5
   inventory: {fileID: 0}
   world: {fileID: 0}
+  wireframeMaterial: {fileID: 2100000, guid: 923ebbbd742feb04795187a06b6d5723, type: 2}
 --- !u!114 &6262367842594485439
 MonoBehaviour:
   m_ObjectHideFlags: 0

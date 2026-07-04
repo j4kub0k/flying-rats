@@ -44,5 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e341c9bf520dcdd448398ac464eff369, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::World
-  WorldSizeInChunks: 10
   Material: {fileID: 2100000, guid: 5ca91ee5e43777d449571e2f8e239613, type: 2}
+  playerPrefab: {fileID: 5368752801273080276, guid: 128fe6f5e85ad6b46920c6359e71e681, type: 3}

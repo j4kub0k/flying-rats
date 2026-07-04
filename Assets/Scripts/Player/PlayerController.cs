@@ -167,6 +167,7 @@ public class PlayerController : MonoBehaviour
         if (timeToMine >= BlockTypeHelper.TimeToDestroy(blockType))
         {
             chunk.SetBlock(localPos, BlockType.Air);
+            chunk.IsModified = true;
             chunkGenerator.GenerateMesh(chunk, chunkGenerator.GetComponent<MeshRenderer>().sharedMaterial);
             timeToMine = 0.0f;
             hasTargetBlock = false;
@@ -181,6 +182,7 @@ public class PlayerController : MonoBehaviour
             return false;
 
         target.chunk.SetBlock(target.localPos, selectedBlockType);
+        target.chunk.IsModified = true;
         world.RebuildChunk(target.chunkCoord);
         return true;
     }

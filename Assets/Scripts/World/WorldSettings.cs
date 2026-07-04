@@ -8,7 +8,7 @@ public static class WorldSettings
     public const int MinMineableHeight = 1;
     public const int MaxBuildHeight = 64;
     public const int MinTerrainHeight = 8; 
-    public const int ViewDistance = 3;
+    public const int ViewDistance = 5;
 
 
 

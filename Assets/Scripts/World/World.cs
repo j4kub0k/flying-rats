@@ -6,19 +6,21 @@ public class World : MonoBehaviour
 
     Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
     Dictionary<Vector3Int, ChunkGenerator> chunkRenderers = new Dictionary<Vector3Int, ChunkGenerator>();
+    int seed;
 
 
     public Material Material;
-    public Transform player;
+    public GameObject playerPrefab;   
+    Transform player;                 
     Vector3Int lastPlayerChunk = new Vector3Int(int.MaxValue, 0, int.MaxValue);
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        WorldGenerator.Initialize(Random.Range(int.MinValue, int.MaxValue));
-        lastPlayerChunk = WorldSettings.WorldToChunkCoord(player.position);
-        lastPlayerChunk.y = 0;
+        seed = Random.Range(int.MinValue, int.MaxValue);
+        WorldGenerator.Initialize(seed);
+        SpawnPlayer();
         UpdateChunks(lastPlayerChunk);
     }
 
@@ -32,7 +34,21 @@ public class World : MonoBehaviour
         UpdateChunks(playerChunk);
     }
 
+    void SpawnPlayer()
+    {
+        int x = Random.Range(-1000, 1000);
+        int z = Random.Range(-1000, 1000);
 
+        float h = WorldGenerator.GetHeight(x, z);
+        Vector3 spawnPos = new Vector3(x + 0.5f, Mathf.FloorToInt(h) + 2f, z + 0.5f);
+
+        GameObject playerGO = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
+        player = playerGO.transform;
+        playerGO.GetComponent<PlayerController>().world = this;
+
+        lastPlayerChunk = WorldSettings.WorldToChunkCoord(spawnPos);
+        lastPlayerChunk.y = 0;
+    }
     void CreateChunk(Vector3Int chunkCoord)
     {
 

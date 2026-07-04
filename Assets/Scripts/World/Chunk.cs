@@ -6,6 +6,7 @@ public class Chunk
 
     public Vector3Int coord;
     BlockType[] blocks;
+    public bool IsModified  = false;
 
 
     public Chunk(Vector3Int coord)
@@ -43,5 +44,21 @@ public class Chunk
                                          localPos.y >= 0 && localPos.y < WorldSettings.ChunkHeight &&
                                          localPos.z >= 0 && localPos.z < WorldSettings.ChunkWidth;
 
+    public byte[] Serialize()
+    {
+        byte[] data = new byte[blocks.Length];
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            data[i] = (byte)blocks[i];
+        }
+        return data;
+    }
 
+    public void Deserialize(byte[] data)
+    {
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            blocks[i] = (BlockType)data[i];
+        }
+    }
 }

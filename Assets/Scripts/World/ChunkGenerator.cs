@@ -82,15 +82,25 @@ public class ChunkGenerator : MonoBehaviour
         triangles.Add(startIndex + 3);
     }
     void BuildMesh() {
-            Mesh mesh = new Mesh();
-            mesh.vertices = vertices.ToArray();
-            mesh.triangles = triangles.ToArray();
-            mesh.colors = colors.ToArray();
-            mesh.uv = uv.ToArray();
-            mesh.RecalculateNormals();
-            mesh.RecalculateBounds();
-            GetComponent<MeshFilter>().mesh = mesh;
-            GetComponent<MeshCollider>().sharedMesh = mesh; 
+        MeshFilter filter = GetComponent<MeshFilter>();
+        Mesh mesh = filter.sharedMesh;
+        if (mesh == null)
+        {
+            mesh = new Mesh();
+            filter.sharedMesh = mesh;
+        }
+        mesh.Clear();
+
+        mesh.vertices = vertices.ToArray();
+        mesh.triangles = triangles.ToArray();
+        mesh.colors = colors.ToArray();
+        mesh.uv = uv.ToArray();
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+
+        MeshCollider collider = GetComponent<MeshCollider>();
+        collider.sharedMesh = null;
+        collider.sharedMesh = mesh;
 
     }
 
@@ -102,9 +112,8 @@ public class ChunkGenerator : MonoBehaviour
         colors.Clear();
         uv.Clear();
 
-        chunkData = chunk;
+        GetComponent<MeshRenderer>().sharedMaterial = material;
 
-        GetComponent<MeshRenderer>().material = material;
         for (int x = 0; x < WorldSettings.ChunkWidth; x++)
             for (int y = 0; y < WorldSettings.ChunkHeight; y++)
                 for (int z = 0; z < WorldSettings.ChunkWidth; z++)
@@ -136,5 +145,12 @@ public class ChunkGenerator : MonoBehaviour
             Color color = BlockTypeHelper.GetColor(currentType);
             AddFace(direction, localPos, color);
         }
+    }
+
+    void OnDestroy()
+    {
+        MeshFilter filter = GetComponent<MeshFilter>();
+        if (filter != null && filter.sharedMesh != null)
+            Destroy(filter.sharedMesh);
     }
 }

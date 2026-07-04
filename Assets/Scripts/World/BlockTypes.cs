@@ -28,9 +28,9 @@ public static class BlockTypeHelper
 
     public static BlockType GetBlockTypeFromHeight(int y)
     {
-        if (y < WorldSettings.GrayMaxHeight)
+        if (y < HeightLimit(BlockType.Gray))
             return BlockType.Gray; // Stone
-        else if (y < WorldSettings.GreenMaxHeight)
+        else if (y < HeightLimit(BlockType.Green))
             return BlockType.Green; // Grass
         else
             return BlockType.White; // Snow
@@ -60,6 +60,19 @@ public static class BlockTypeHelper
             BlockType.Green => false,
             BlockType.White => false,
             _ => false, // Default for unknown block types
+        };
+    }
+
+
+    public static int HeightLimit(BlockType blockType)
+    {
+        return blockType switch
+        {
+            BlockType.Air => 0,
+            BlockType.Gray => 20,
+            BlockType.Green => 32,
+            BlockType.White => WorldSettings.MaxTerrainHeight,
+            _ => WorldSettings.MaxTerrainHeight, // Default for unknown block types
         };
     }
 

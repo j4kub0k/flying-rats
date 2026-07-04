@@ -210,7 +210,7 @@ public class PlayerController : MonoBehaviour
         Vector3Int localPos = WorldSettings.WorldToLocalCoord(blockPos);
         if (chunk.GetBlock(localPos) != BlockType.Air) return false;
 
-        Bounds blockBounds = new Bounds((Vector3)blockPos + Vector3.one * 0.5f, Vector3.one);
+        Bounds blockBounds = new Bounds((Vector3)blockPos + Vector3.one * 0.5f, Vector3.one * 0.98f);
         if (blockBounds.Intersects(controller.bounds)) return false;
 
         target = new BuildTarget { blockPos = blockPos, chunkCoord = chunkCoord, localPos = localPos, chunk = chunk };
@@ -259,7 +259,7 @@ public class PlayerController : MonoBehaviour
         buildPreview = new GameObject("BuildPreview");
         buildPreview.AddComponent<MeshFilter>().mesh = BuildWireframeCubeMesh();
 
-        buildPreview.AddComponent<MeshRenderer>().material = wireframeMaterial;
+        buildPreview.AddComponent<MeshRenderer>().sharedMaterial = wireframeMaterial;
 
 
         buildPreview.SetActive(false);

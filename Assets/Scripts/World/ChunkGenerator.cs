@@ -112,6 +112,7 @@ public class ChunkGenerator : MonoBehaviour
         colors.Clear();
         uv.Clear();
 
+        chunkData = chunk;
         GetComponent<MeshRenderer>().sharedMaterial = material;
 
         for (int x = 0; x < WorldSettings.ChunkWidth; x++)

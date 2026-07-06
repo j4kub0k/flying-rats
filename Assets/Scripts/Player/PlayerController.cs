@@ -59,6 +59,8 @@ public class PlayerController : MonoBehaviour
             if (v != 0) inventory.Scroll(v > 0 ? 1 : -1);
         };
 
+        controls.Player.Save.performed += ctx => world.SaveWorldData();
+
 
     }
 

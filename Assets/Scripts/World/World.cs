@@ -18,7 +18,7 @@ public class World : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        seed = Random.Range(int.MinValue, int.MaxValue);
+        seed = SaveWorld.GetSeed();
         WorldGenerator.Initialize(seed);
         SpawnPlayer();
         UpdateChunks(lastPlayerChunk);
@@ -52,10 +52,14 @@ public class World : MonoBehaviour
     void CreateChunk(Vector3Int chunkCoord)
     {
 
+
         if (!chunks.TryGetValue(chunkCoord, out Chunk chunk))
         {
-            chunk = new Chunk(chunkCoord);
-            WorldGenerator.GenerateChunk(chunk);
+            if (!SaveWorld.TryLoadChunk(chunkCoord, out chunk))
+            {
+                chunk = new Chunk(chunkCoord);
+                WorldGenerator.GenerateChunk(chunk);
+            }
             chunks[chunkCoord] = chunk;
         }
 
@@ -91,7 +95,6 @@ public class World : MonoBehaviour
 
     void UpdateChunks(Vector3Int playerChunk)
     {
-        // spawn: všetko v dosahu, èo nemá renderer
         for (int x = -WorldSettings.ViewDistance; x <= WorldSettings.ViewDistance; x++)
             for (int z = -WorldSettings.ViewDistance; z <= WorldSettings.ViewDistance; z++)
             {
@@ -114,5 +117,15 @@ public class World : MonoBehaviour
             chunkRenderers.Remove(coord);
             // chunks[coord] zámerne NEMAZA — dáta prežívajú
         }
+    }
+
+    public void SaveWorldData()
+    {
+        SaveWorld.Save(seed, chunks);
+    }
+
+    private void OnApplicationQuit()
+    {
+            SaveWorldData();
     }
 }

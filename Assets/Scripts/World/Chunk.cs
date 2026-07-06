@@ -54,11 +54,17 @@ public class Chunk
         return data;
     }
 
-    public void Deserialize(byte[] data)
+    public Chunk Deserialize(byte[] data)
     {
+        if (data.Length != blocks.Length)
+        {
+            Debug.LogError($"Data length {data.Length} does not match expected length {blocks.Length} for chunk at {coord}");
+            return this;
+        }
         for (int i = 0; i < blocks.Length; i++)
         {
             blocks[i] = (BlockType)data[i];
         }
+        return this;
     }
 }

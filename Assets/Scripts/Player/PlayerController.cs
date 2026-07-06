@@ -62,6 +62,8 @@ public class PlayerController : MonoBehaviour
 
         controls.Player.Save.performed += ctx => world.SaveWorldData();
 
+        controls.Player.Delete.performed += ctx => SaveWorld.DeleteSave();
+
 
     }
 

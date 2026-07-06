@@ -39,8 +39,7 @@ public static class SaveWorld
         {
             Debug.Log("Seed file not found.");
             int seed = Random.Range(int.MinValue, int.MaxValue);
-            if (Directory.Exists(path))
-                Directory.Delete(path, true);
+            DeleteSave();
             return seed;
         }
     }
@@ -57,5 +56,14 @@ public static class SaveWorld
         }
         chunk = null;
         return false;
+    }
+
+
+    public static void DeleteSave()
+    {
+        if (Directory.Exists(path))
+        {
+            Directory.Delete(path, true);
+        }
     }
 }

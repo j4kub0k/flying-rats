@@ -9,6 +9,7 @@ public class ChunkGenerator : MonoBehaviour
     List<Vector3> vertices = new List<Vector3>();
     List<int> triangles = new List<int>();
     List<Color> colors = new List<Color>();
+    List<Vector2> uvs = new List<Vector2>();
 
 
 
@@ -66,7 +67,11 @@ public class ChunkGenerator : MonoBehaviour
             colors.Add(color);
         }
 
-       
+        uvs.Add(new Vector2(0, 0));
+        uvs.Add(new Vector2(0, 1));
+        uvs.Add(new Vector2(1, 1));
+        uvs.Add(new Vector2(1, 0));
+
 
         triangles.Add(startIndex + 0);
         triangles.Add(startIndex + 1);
@@ -89,6 +94,7 @@ public class ChunkGenerator : MonoBehaviour
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.colors = colors.ToArray();
+        mesh.uv = uvs.ToArray();
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
 
@@ -104,6 +110,7 @@ public class ChunkGenerator : MonoBehaviour
         vertices.Clear();
         triangles.Clear();
         colors.Clear();
+        uvs.Clear();
         
         GetComponent<MeshRenderer>().sharedMaterial = material;
 

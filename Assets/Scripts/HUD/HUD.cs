@@ -48,9 +48,7 @@ public class HUD : MonoBehaviour
         {
             return;
         }
-        CreateCrosshair(root);
-        CreateHotBar(root);
-        isInventoryVisible = true;
+  
     }
 
     void Update()

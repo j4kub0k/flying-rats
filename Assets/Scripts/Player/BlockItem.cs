@@ -31,7 +31,7 @@ public class BlockItem : Item
 
     public override void AddToInventory()
     {
-        player.inventory.AddItem(this);
+        player.Inventory.AddItem(this);
     }
 
     public override bool IsSameItem(Item other)

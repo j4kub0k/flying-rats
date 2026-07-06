@@ -4,6 +4,8 @@ using UnityEngine;
 public class World : MonoBehaviour
 {
 
+    public HUD HUD;
+
     Dictionary<Vector3Int, Chunk> chunks = new Dictionary<Vector3Int, Chunk>();
     Dictionary<Vector3Int, ChunkGenerator> chunkRenderers = new Dictionary<Vector3Int, ChunkGenerator>();
     int seed;
@@ -45,6 +47,7 @@ public class World : MonoBehaviour
         GameObject playerGO = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
         player = playerGO.transform;
         playerGO.GetComponent<PlayerController>().world = this;
+        HUD.playerController = playerGO.GetComponent<PlayerController>();
 
         lastPlayerChunk = WorldSettings.WorldToChunkCoord(spawnPos);
         lastPlayerChunk.y = 0;

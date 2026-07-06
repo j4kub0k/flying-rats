@@ -11,10 +11,11 @@ public class PlayerController : MonoBehaviour
     public float mouseSensitivity = 2.0f;
     public float reachDistance = 5.0f;
     float timeToMine = 0.0f;
+    public float MiningProgress { get; private set; }
     bool hasTargetBlock = false;
     Vector3Int currentMineTarget;
     CharacterController controller;
-    public Inventory inventory;
+    public Inventory Inventory;
     Camera playerCamera;
     public World world;
 
@@ -51,12 +52,12 @@ public class PlayerController : MonoBehaviour
         controls.Player.Mine.performed += ctx => destroyIsHeld = true;
         controls.Player.Mine.canceled += ctx => destroyIsHeld = false;
 
-        controls.Player.Build.performed += ctx => inventory.GetSelectedItem()?.Use();
-        controls.Player.SelectItem.performed += ctx => inventory.SelectSlot((int)ctx.ReadValue<float>() - 1);
+        controls.Player.Build.performed += ctx => Inventory.GetSelectedItem()?.Use();
+        controls.Player.SelectItem.performed += ctx => Inventory.SelectSlot((int)ctx.ReadValue<float>() - 1);
         controls.Player.ScrollItem.performed += ctx =>
         {
             float v = ctx.ReadValue<float>();
-            if (v != 0) inventory.Scroll(v > 0 ? 1 : -1);
+            if (v != 0) Inventory.Scroll(v > 0 ? 1 : -1);
         };
 
         controls.Player.Save.performed += ctx => world.SaveWorldData();
@@ -71,7 +72,7 @@ public class PlayerController : MonoBehaviour
     {
         playerCamera = Camera.main;
         Cursor.lockState = CursorLockMode.Locked;
-        inventory = GetComponent<Inventory>();
+        Inventory = GetComponent<Inventory>();
         CreateBuildPreview();
     }
     // Update is called once per frame
@@ -121,6 +122,7 @@ public class PlayerController : MonoBehaviour
         {
             timeToMine = 0.0f;
             hasTargetBlock = false;
+            MiningProgress = 0.0f;
             return;
         }
 
@@ -129,6 +131,7 @@ public class PlayerController : MonoBehaviour
         {
             timeToMine = 0.0f;
             hasTargetBlock = false;
+            MiningProgress = 0.0f;
             return;
         }
 
@@ -140,11 +143,13 @@ public class PlayerController : MonoBehaviour
             hasTargetBlock = true;
             currentMineTarget = blockPos;
             timeToMine = 0.0f;
+            MiningProgress = 0.0f;
         }
 
         if (blockPos.y < WorldSettings.MinMineableHeight)
         {
             timeToMine = 0.0f;
+            MiningProgress = 0.0f;
             return;
         }
 
@@ -161,10 +166,12 @@ public class PlayerController : MonoBehaviour
         if (BlockTypeHelper.Unbreakable(blockType))
         {
             timeToMine = 0.0f;
+            MiningProgress = 0.0f;
             return;
         }
 
         timeToMine += Time.deltaTime;
+        MiningProgress = timeToMine / BlockTypeHelper.TimeToDestroy(blockType);
 
         if (timeToMine >= BlockTypeHelper.TimeToDestroy(blockType))
         {
@@ -278,7 +285,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if(inventory.GetSelectedItem() is  not BlockItem)
+        if(Inventory.GetSelectedItem() is  not BlockItem)
         {
             buildPreview.SetActive(false);
             return;

@@ -191,7 +191,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 2
-  m_Radius: 0.5
+  m_Radius: 0.4
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -214,7 +214,7 @@ MonoBehaviour:
   gravity: -25
   mouseSensitivity: 2
   reachDistance: 5
-  inventory: {fileID: 0}
+  Inventory: {fileID: 0}
   world: {fileID: 0}
   wireframeMaterial: {fileID: 2100000, guid: 923ebbbd742feb04795187a06b6d5723, type: 2}
 --- !u!114 &6262367842594485439

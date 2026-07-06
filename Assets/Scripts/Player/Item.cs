@@ -21,7 +21,7 @@ public abstract class Item
     {
         this.player = player;
         this.Count = count;
-        inventory = player.inventory;
+        inventory = player.Inventory;
     }
 
 

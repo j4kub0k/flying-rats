@@ -31,10 +31,7 @@ public class Chunk
         {
             blocks[GetIndex(localPos)] = blockType;
         }
-       else
-        {
-           Debug.LogWarning($"Local position {localPos} is out of bounds for chunk at {coord}");
-        }
+       
 
     }
 
@@ -58,7 +55,6 @@ public class Chunk
     {
         if (data.Length != blocks.Length)
         {
-            Debug.LogError($"Data length {data.Length} does not match expected length {blocks.Length} for chunk at {coord}");
             return this;
         }
         for (int i = 0; i < blocks.Length; i++)

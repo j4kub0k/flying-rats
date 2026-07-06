@@ -46,7 +46,6 @@ public class HUD : MonoBehaviour
 
         if (playerController == null)
         {
-            Debug.Log("PlayerController is not assigned in HUD.");
             return;
         }
         CreateCrosshair(root);
@@ -207,7 +206,6 @@ public class HUD : MonoBehaviour
         for (int i = 0; i < slots.Length; i++)
         {
             Item item = inventory.items[i];
-            if (item == null) continue;
 
             if (item is BlockItem blockItem)
             {

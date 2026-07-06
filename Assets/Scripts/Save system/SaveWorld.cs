@@ -37,7 +37,7 @@ public static class SaveWorld
         }
         else
         {
-            Debug.Log("Seed file not found.");
+          
             int seed = Random.Range(int.MinValue, int.MaxValue);
             DeleteSave();
             return seed;

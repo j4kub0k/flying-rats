@@ -33,7 +33,6 @@ public class Inventory : MonoBehaviour
             {
                 items[i] = item;
                 item.Index = i;
-                Debug.Log($"Added {item.GetItemName()} to inventory at index {i}");
                 return;
             }
         }
@@ -64,7 +63,6 @@ public class Inventory : MonoBehaviour
         if (index >= 0 && index < MaxSize)
         {
             selectedIndex = index;
-            Debug.Log($"Selected slot {selectedIndex} with item {GetSelectedItem()?.GetItemName()}");
         }
     }
 }

@@ -9,8 +9,6 @@ public class ChunkGenerator : MonoBehaviour
     List<Vector3> vertices = new List<Vector3>();
     List<int> triangles = new List<int>();
     List<Color> colors = new List<Color>();
-    List<Vector2> uv = new List<Vector2>();
-    public Chunk chunkData;
 
 
 
@@ -68,10 +66,7 @@ public class ChunkGenerator : MonoBehaviour
             colors.Add(color);
         }
 
-        uv.Add(new Vector2(0, 0));
-        uv.Add(new Vector2(0, 1));
-        uv.Add(new Vector2(1, 1));
-        uv.Add(new Vector2(1, 0));
+       
 
         triangles.Add(startIndex + 0);
         triangles.Add(startIndex + 1);
@@ -94,7 +89,6 @@ public class ChunkGenerator : MonoBehaviour
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.colors = colors.ToArray();
-        mesh.uv = uv.ToArray();
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
 
@@ -110,9 +104,7 @@ public class ChunkGenerator : MonoBehaviour
         vertices.Clear();
         triangles.Clear();
         colors.Clear();
-        uv.Clear();
-
-        chunkData = chunk;
+        
         GetComponent<MeshRenderer>().sharedMaterial = material;
 
         for (int x = 0; x < WorldSettings.ChunkWidth; x++)
@@ -122,14 +114,14 @@ public class ChunkGenerator : MonoBehaviour
                     Vector3Int localPos = new Vector3Int(x, y, z);
                     BlockType type = chunk.GetBlock(localPos);
 
-                    if (type == BlockType.Air) continue; // vzduch nemá mesh
+                    if (type == BlockType.Air) continue; 
 
                     CheckAndAddFace(chunk, localPos, Vector3Int.up);
                     CheckAndAddFace(chunk, localPos, Vector3Int.down);
                     CheckAndAddFace(chunk, localPos, Vector3Int.left);
                     CheckAndAddFace(chunk, localPos, Vector3Int.right);
-                    CheckAndAddFace(chunk, localPos, new Vector3Int(0, 0, 1));  // forward
-                    CheckAndAddFace(chunk, localPos, new Vector3Int(0, 0, -1)); // back
+                    CheckAndAddFace(chunk, localPos, new Vector3Int(0, 0, 1));  
+                    CheckAndAddFace(chunk, localPos, new Vector3Int(0, 0, -1)); 
                 }
 
         BuildMesh();

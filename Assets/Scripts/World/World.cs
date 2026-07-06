@@ -29,7 +29,7 @@ public class World : MonoBehaviour
     void Update()
     {
         Vector3Int playerChunk = WorldSettings.WorldToChunkCoord(player.position);
-        playerChunk.y = 0;   // svet je 2D mrieûka chunkov, v˝öku ignoruj
+        playerChunk.y = 0;   
 
         if (playerChunk == lastPlayerChunk) return;
         lastPlayerChunk = playerChunk;
@@ -106,7 +106,7 @@ public class World : MonoBehaviour
                     CreateChunk(coord);
             }
 
-        // despawn: renderery mimo dosah + 1
+       
         List<Vector3Int> toRemove = new List<Vector3Int>();
         foreach (var coord in chunkRenderers.Keys)
         {
@@ -118,7 +118,7 @@ public class World : MonoBehaviour
         {
             Destroy(chunkRenderers[coord].gameObject);
             chunkRenderers.Remove(coord);
-            // chunks[coord] z·merne NEMAZAç ó d·ta preûÌvaj˙
+   
         }
     }
 
@@ -127,8 +127,5 @@ public class World : MonoBehaviour
         SaveWorld.Save(seed, chunks);
     }
 
-    private void OnApplicationQuit()
-    {
-            SaveWorldData();
-    }
+
 }

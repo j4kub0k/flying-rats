@@ -24,7 +24,7 @@ public static class WorldGenerator
         float amplitude = 1f;
         float frequency = 1f;
         float noiseHeight = 0f;
-        float amplitudeSum = 0f; // na normalizáciu vısledku spä do 0..1
+        float amplitudeSum = 0f; 
 
         for (int i = 0; i < octaves; i++)
         {
@@ -40,7 +40,7 @@ public static class WorldGenerator
         }
 
         noiseHeight /= amplitudeSum;
-        noiseHeight = Mathf.InverseLerp(0.3f, 0.7f, noiseHeight); // remap + automaticky clampuje
+        noiseHeight = Mathf.InverseLerp(0.3f, 0.7f, noiseHeight); 
         return Mathf.Lerp(WorldSettings.MinTerrainHeight, WorldSettings.MaxTerrainHeight, noiseHeight);
     }
 

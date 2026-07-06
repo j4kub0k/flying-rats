@@ -122,19 +122,15 @@ public class PlayerController : MonoBehaviour
     {
         if (!destroyIsHeld)
         {
-            timeToMine = 0.0f;
-            hasTargetBlock = false;
-            MiningProgress = 0.0f;
+          ResetMining();
             return;
         }
 
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         if (!Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
-            timeToMine = 0.0f;
-            hasTargetBlock = false;
-            MiningProgress = 0.0f;
-            return;
+          ResetMining();
+          return;
         }
 
         Vector3 targetBlockPos = hit.point - hit.normal * 0.5f;
@@ -150,25 +146,24 @@ public class PlayerController : MonoBehaviour
 
         if (blockPos.y < WorldSettings.MinMineableHeight)
         {
-            timeToMine = 0.0f;
-            MiningProgress = 0.0f;
+           ResetMining();
             return;
         }
 
-        ChunkGenerator chunkGenerator = hit.collider.GetComponentInParent<ChunkGenerator>();
-        if (chunkGenerator == null) return;
-
-        Chunk chunk = chunkGenerator.chunkData;
-        if (chunk == null) return;
+        Vector3Int chunkCoord = WorldSettings.WorldToChunkCoord(blockPos);
+        Chunk chunk = world.GetChunk(chunkCoord);
+        if (chunk == null)
+        {
+              ResetMining();
+                return;
+        }
 
         Vector3Int localPos = WorldSettings.WorldToLocalCoord(blockPos);
         BlockType blockType = chunk.GetBlock(localPos);
 
-        // Unbreakable(Air) == true, takze toto vylucuje aj mierenie do prazdna
         if (BlockTypeHelper.Unbreakable(blockType))
         {
-            timeToMine = 0.0f;
-            MiningProgress = 0.0f;
+           ResetMining();
             return;
         }
 
@@ -179,7 +174,7 @@ public class PlayerController : MonoBehaviour
         {
             chunk.SetBlock(localPos, BlockType.Air);
             chunk.IsModified = true;
-            chunkGenerator.GenerateMesh(chunk, chunkGenerator.GetComponent<MeshRenderer>().sharedMaterial);
+            world.RebuildChunk(chunkCoord);
             timeToMine = 0.0f;
             hasTargetBlock = false;
             BlockItem blockItem = new BlockItem(this, blockType);
@@ -301,5 +296,13 @@ public class PlayerController : MonoBehaviour
         {
             buildPreview.SetActive(false);
         }
+    }
+
+
+    void ResetMining()
+    {
+        timeToMine = 0.0f;
+        hasTargetBlock = false;
+        MiningProgress = 0.0f;
     }
 }

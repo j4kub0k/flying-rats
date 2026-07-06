@@ -4,6 +4,13 @@ using System.IO;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+
+
+/// <summary>
+/// Static persistence layer. Saves the world seed plus player-modified chunks
+/// (one binary file per chunk); unmodified chunks are regenerated from the seed
+/// on load, so they are never written to disk.
+/// </summary>
 public static class SaveWorld
 {
 
@@ -13,6 +20,8 @@ public static class SaveWorld
     {
         Directory.CreateDirectory(path);
         File.WriteAllBytes(Path.Combine(path, "seed.bin"), BitConverter.GetBytes(seed));
+        // Only modified chunks are written; untouched ones are regenerated
+        // from the seed, keeping saves small and load logic simple.
         foreach (var chunk in chunks)
         {
             if (chunk.Value.IsModified)
@@ -39,6 +48,9 @@ public static class SaveWorld
         {
           
             int seed = Random.Range(int.MinValue, int.MaxValue);
+            // No seed file means a new world with a new seed. Any leftover chunk files
+            // belong to the old world and would mix foreign terrain into this one,
+            // so wipe the save directory before starting fresh.
             DeleteSave();
             return seed;
         }

@@ -1,6 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+/// <summary>
+/// First-person player: movement, camera look, mining, building and input
+/// bindings (new Input System). Mining is time-based per block type; building
+/// snaps to the world grid and shows a wireframe preview of the target cell.
+/// </summary>
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
@@ -62,6 +69,7 @@ public class PlayerController : MonoBehaviour
 
         controls.Player.Save.performed += ctx => world.SaveWorldData();
 
+        // Dev-only keybind: wipes the save on disk.
         controls.Player.Delete.performed += ctx => SaveWorld.DeleteSave();
 
 
@@ -132,7 +140,8 @@ public class PlayerController : MonoBehaviour
           ResetMining();
           return;
         }
-
+        // Step half a block INTO the surface to get the block being looked at
+        // (Build steps outward instead, to get the empty cell in front of it).
         Vector3 targetBlockPos = hit.point - hit.normal * 0.5f;
         Vector3Int blockPos = Vector3Int.FloorToInt(targetBlockPos);
 
@@ -208,6 +217,7 @@ public class PlayerController : MonoBehaviour
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         if (!Physics.Raycast(ray, out RaycastHit hit, reachDistance)) return false;
 
+        // Step half a block OUT of the surface to get the empty neighbor cell.
         Vector3Int blockPos = Vector3Int.FloorToInt(hit.point + hit.normal * 0.5f);
         if (blockPos.y >= WorldSettings.MaxBuildHeight) return false;
 
@@ -217,7 +227,7 @@ public class PlayerController : MonoBehaviour
 
         Vector3Int localPos = WorldSettings.WorldToLocalCoord(blockPos);
         if (chunk.GetBlock(localPos) != BlockType.Air) return false;
-
+        // Slightly shrunk bounds so standing flush next to a cell still allows building.
         Bounds blockBounds = new Bounds((Vector3)blockPos + Vector3.one * 0.5f, Vector3.one * 0.98f);
         if (blockBounds.Intersects(controller.bounds)) return false;
 

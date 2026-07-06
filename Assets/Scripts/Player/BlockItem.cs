@@ -1,5 +1,10 @@
 using UnityEngine;
 
+
+/// <summary>
+/// Inventory item representing a stack of placeable blocks of one type.
+/// Using it attempts to build the block and decrements the stack.
+/// </summary>
 public class BlockItem : Item
 {
     public BlockType blockType;

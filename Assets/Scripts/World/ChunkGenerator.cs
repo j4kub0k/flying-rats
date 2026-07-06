@@ -2,6 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+
+/// <summary>
+/// Builds the render mesh for a single chunk. Generates only faces adjacent to air
+/// (face culling) and colors them via vertex colors. Pure view layer - chunk data
+/// lives in Chunk and is owned by World.
+/// </summary>
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
 public class ChunkGenerator : MonoBehaviour
 {

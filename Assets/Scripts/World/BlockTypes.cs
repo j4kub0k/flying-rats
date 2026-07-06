@@ -10,7 +10,11 @@ public enum BlockType
     Green,
     White,
 }
-
+/// <summary>
+/// Block type definitions and their per-type properties (color, mining time,
+/// height placement). Enum-based storage keeps chunk data compact and trivially
+/// serializable; switch-based lookups are fine at this block count.
+/// </summary>
 public static class BlockTypeHelper
 {
 

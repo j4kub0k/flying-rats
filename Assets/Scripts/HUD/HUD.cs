@@ -1,6 +1,12 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
+
+/// <summary>
+/// Runtime-built UI Toolkit HUD (no UXML/USS): crosshair, mining progress bar
+/// and inventory hotbar. Read-only view over PlayerController state; built lazily
+/// once the player has spawned.
+/// </summary>
 public class HUD : MonoBehaviour
 {
     public PlayerController playerController;
@@ -125,7 +131,6 @@ public class HUD : MonoBehaviour
             slot.style.backgroundColor = new Color(0f, 0f, 0f, 0.5f);
             SetBorder(slot, new Color(0.2f, 0.2f, 0.2f, 0.8f), 2f);
 
-            // farebný swatch bloku – vyplní slot s malým odsadením
             VisualElement swatch = new VisualElement();
             swatch.style.position = Position.Absolute;
             swatch.style.left = 6f;
@@ -134,14 +139,14 @@ public class HUD : MonoBehaviour
             swatch.style.bottom = 6f;
             swatch.style.backgroundColor = Color.clear;
 
-            // poèet kusov – pravý dolný roh
+            
             Label count = new Label();
             count.style.position = Position.Absolute;
             count.style.right = 2f;
             count.style.bottom = 2f;
             count.style.color = Color.white;
             count.style.fontSize = 14f;
-            count.style.unityTextOutlineColor = Color.black;   // obrys, nech je èitate¾ný aj na bielom snowe
+            count.style.unityTextOutlineColor = Color.black;   
             count.style.unityTextOutlineWidth = 1f;
             count.text = "";
 

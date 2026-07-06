@@ -8,6 +8,10 @@ public enum ItemType
    Consumable,
    Tool,
 }
+/// <summary>
+/// Base class for inventory items. Plain C# class (not a MonoBehaviour) since
+/// items are pure data + behavior and need no scene presence.
+/// </summary>
 public abstract class Item
 {
     public ItemType itemType;

@@ -1,5 +1,10 @@
 using UnityEngine;
 
+
+/// <summary>
+/// Fixed-size item inventory with stacking and slot selection.
+/// Displayed by HUD as the hotbar; selection drives which block the player builds.
+/// </summary>
 public class Inventory : MonoBehaviour
 {
 

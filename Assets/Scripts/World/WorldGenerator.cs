@@ -1,5 +1,12 @@
 using UnityEngine;
 
+
+
+/// <summary>
+/// Static, seeded terrain generator. Produces height values from multi-octave
+/// Perlin noise and fills new chunks with blocks. Deterministic for a given seed,
+/// so unmodified chunks never need to be saved - they can always be regenerated.
+/// </summary>
 public static class WorldGenerator
 {
     static float seedOffsetX;

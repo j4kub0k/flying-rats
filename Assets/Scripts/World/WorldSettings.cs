@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// Global world constants (chunk dimensions, height limits, view distance)
+/// and coordinate conversion helpers between world, chunk and local space.
+/// </summary>
 public static class WorldSettings
 {
     public const int ChunkWidth = 16;
@@ -13,7 +17,7 @@ public static class WorldSettings
 
 
 
-    public static Vector3Int WorldToChunkCoord(Vector3 worldPos)
+    public static Vector3Int WorldToChunkCoord(Vector3 worldPos) 
     {
         int chunkX = Mathf.FloorToInt(worldPos.x / ChunkWidth);
         int chunkY = Mathf.FloorToInt(worldPos.y / ChunkHeight);
@@ -22,12 +26,13 @@ public static class WorldSettings
     }
 
 
-    public static Vector3Int WorldToLocalCoord(Vector3Int worldPos)
+    public static Vector3Int WorldToLocalCoord(Vector3Int worldPos)  
     {
         int localX = Mathf.FloorToInt(worldPos.x) % ChunkWidth;
         int localY = Mathf.FloorToInt(worldPos.y) % ChunkHeight;
         int localZ = Mathf.FloorToInt(worldPos.z) % ChunkWidth;
-        // Handle negative coordinates
+        // C# '%' preserves the sign of the dividend, so negative world coordinates
+        // need shifting back into the [0, size) range.
         if (localX < 0) localX += ChunkWidth;
         if (localY < 0) localY += ChunkHeight;
         if (localZ < 0) localZ += ChunkWidth;

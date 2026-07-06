@@ -1,6 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// Central world manager. Owns the chunk data dictionary (single source of truth),
+/// streams chunk renderers in and out based on player position, and coordinates
+/// world generation, saving and player spawning.
+/// </summary>
 public class World : MonoBehaviour
 {
 
@@ -55,7 +61,7 @@ public class World : MonoBehaviour
     void CreateChunk(Vector3Int chunkCoord)
     {
 
-
+        // Chunk data resolution order: memory -> disk -> generator.
         if (!chunks.TryGetValue(chunkCoord, out Chunk chunk))
         {
             if (!SaveWorld.TryLoadChunk(chunkCoord, out chunk))
